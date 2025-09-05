@@ -78,6 +78,11 @@ export function Junk20Section() {
       },
       (err) => {
         console.error("Could not copy text: ", err)
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy the command to clipboard.",
+          variant: "destructive",
+        })
       },
     )
   }
