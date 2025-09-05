@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 86% 8%;
+    --foreground: 24 100% 50%;
+
+    --card: 222 86% 12%;
+    --card-foreground: 24 100% 50%;
+
+    --popover: 222 86% 12%;
+    --popover-foreground: 24 100% 50%;
+
+    --primary: 24 100% 50%;
+    --primary-foreground: 222 86% 8%;
+
+    --secondary: 222 86% 17%;
+    --secondary-foreground: 24 100% 50%;
+
+    --muted: 222 86% 17%;
+    --muted-foreground: 24 100% 40%;
+
+    --accent: 24 100% 50%;
+    --accent-foreground: 222 86% 8%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 24 100% 50%;
+
+    --border: 222 86% 17%;
+    --input: 222 86% 17%;
+    --ring: 24 100% 50%;
+
+    --radius: 0rem;
+    --body-text: 0 0% 80%;
+    --font-vt323: "VT323", monospace;
+    --font-ibm-plex-mono: "IBM Plex Mono", monospace;
+    --font-share-tech-mono: "Share Tech Mono", monospace;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-[hsl(var(--body-text))];
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #031126;
+  }
+}
+
+/* Update the font classes to use CSS variables */
+.vt323-regular {
+  font-family: var(--font-vt323), monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.ibm-plex-mono-thin {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.ibm-plex-mono-extralight {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.ibm-plex-mono-light {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.ibm-plex-mono-regular {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.ibm-plex-mono-medium {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.ibm-plex-mono-semibold {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.ibm-plex-mono-bold {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.ibm-plex-mono-thin-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.ibm-plex-mono-extralight-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.ibm-plex-mono-light-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.ibm-plex-mono-regular-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.ibm-plex-mono-medium-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.ibm-plex-mono-semibold-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.ibm-plex-mono-bold-italic {
+  font-family: var(--font-ibm-plex-mono), monospace;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.grid-container {
+  --grid: 10rem;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.plane {
+  --dir: 1;
+  width: 200%;
+  height: 200%;
+  position: absolute;
+  top: -50%;
+  left: -50%;
+}
+
+.plane > * {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.plane > *::before,
+.plane > *::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.plane > *::before {
+  background-image: repeating-linear-gradient(to left, #ff5e01, #ff5e01 1px, transparent 1px, transparent var(--grid)),
+    repeating-linear-gradient(to bottom, #ff5e01, #ff5e01 1px, transparent 1px, transparent var(--grid));
+  animation: move 20s linear infinite;
+}
+
+.plane > *::after {
+  background-image: linear-gradient(to bottom, rgba(3, 17, 38, 0.7) 0%, rgba(3, 17, 38, 0) 100%);
+}
+
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(calc(var(--grid) * var(--dir)), calc(var(--grid) * var(--dir)));
+  }
+}
+
+.glow {
+  filter: blur(1rem);
+  z-index: 1;
+  mix-blend-mode: plus-lighter;
+}
+
+.main-title {
+  color: #ff5e01;
+  font-family: var(--font-share-tech-mono), "Cascadia Code", Menlo, Monaco, "Courier New", monospace;
+  font-size: 3rem;
+  animation: shadowPulse 1s steps(2, start) infinite;
+  filter: drop-shadow(0px 0px 5px currentColor);
+  position: relative;
+  z-index: 10;
+}
+
+.main-title::after {
+  content: "";
+  display: inline-block;
+  width: .2em;
+  height: .7em;
+  background-color: currentColor;
+  margin-left: .1em;
+  animation: blink 1s steps(2, start) infinite;
+  vertical-align: baseline;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes shadowPulse {
+  50% {
+    filter: drop-shadow(0px 0px 5px currentColor);
+  }
+}
