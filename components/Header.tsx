@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Info, Search } from "lucide-react"
+import { Info, Search, Code } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
@@ -50,6 +50,10 @@ export function Header() {
         <div className="flex flex-wrap items-center space-x-4 mb-2 md:mb-0">
           <Link href="/" className="text-xl font-bold text-[#ff5e01] vt323-regular">
             Junkinals<sup className="text-xs">alpha</sup>
+          </Link>
+          <Link href="/api" className="text-[#ff5e01]/80 hover:text-[#ff5e01] ibm-plex-mono-regular flex items-center">
+            <Code className="w-4 h-4 mr-1" />
+            API
           </Link>
           <Link
             href="https://github.com/Junkcoin-Foundation/junkscriptions"

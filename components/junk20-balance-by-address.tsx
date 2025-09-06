@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, Code } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 import { API_BASE_URL } from "@/utils/api"
 
 interface TokenBalance {
@@ -44,6 +45,28 @@ export function Junk20BalanceByAddress() {
     }
   }, [jkcAddress])
 
+  const copyApiEndpoint = () => {
+    const endpoint = jkcAddress
+      ? `${API_BASE_URL}/junk20/balance/${jkcAddress}`
+      : `${API_BASE_URL}/junk20/balance/{address}`
+    navigator.clipboard.writeText(endpoint).then(
+      () => {
+        toast({
+          title: "API Endpoint Copied",
+          description: "Balance API endpoint copied to clipboard.",
+        })
+      },
+      (err) => {
+        console.error("Could not copy text: ", err)
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy API endpoint.",
+          variant: "destructive",
+        })
+      },
+    )
+  }
+
   const formatNumber = (num: string): string => {
     const bigNum = BigInt(num)
     return bigNum.toString()
@@ -55,6 +78,15 @@ export function Junk20BalanceByAddress() {
         <CardTitle className="text-xl sm:text-2xl font-semibold text-[#ff5e01] vt323-regular">
           Junk-20 Balance by Address
         </CardTitle>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={copyApiEndpoint}
+          className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+          title="Copy API endpoint"
+        >
+          <Code className="h-4 w-4" />
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex items-center space-x-2">

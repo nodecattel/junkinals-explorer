@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { API_BASE_URL } from "@/utils/api"
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, Code } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/use-toast"
 
 interface Inscription {
   id: string
@@ -52,6 +53,26 @@ export function LatestJunkscriptions() {
     }
   }, [])
 
+  const copyApiEndpoint = () => {
+    const endpoint = `${API_BASE_URL}/junkscriptions`
+    navigator.clipboard.writeText(endpoint).then(
+      () => {
+        toast({
+          title: "API Endpoint Copied",
+          description: "Junkscriptions API endpoint copied to clipboard.",
+        })
+      },
+      (err) => {
+        console.error("Could not copy text: ", err)
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy API endpoint.",
+          variant: "destructive",
+        })
+      },
+    )
+  }
+
   useEffect(() => {
     fetchData()
   }, [fetchData])
@@ -76,6 +97,15 @@ export function LatestJunkscriptions() {
               Current Block: {currentBlock}
             </span>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={copyApiEndpoint}
+            className="text-[#ff5e01] hover:text-[hsl(var(--body-text))]"
+            title="Copy API endpoint"
+          >
+            <Code className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="sm"

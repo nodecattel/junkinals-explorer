@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { RefreshCw, Copy, ExternalLink, CheckCircle } from "lucide-react"
+import { RefreshCw, Copy, ExternalLink, CheckCircle, Code } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/components/ui/use-toast"
 import { API_BASE_URL } from "@/utils/api"
@@ -87,6 +87,26 @@ export function Junk20Section() {
     )
   }
 
+  const copyApiEndpoint = () => {
+    const endpoint = `${API_BASE_URL}/junk20/ticks`
+    navigator.clipboard.writeText(endpoint).then(
+      () => {
+        toast({
+          title: "API Endpoint Copied",
+          description: "JUNK-20 tokens API endpoint copied to clipboard.",
+        })
+      },
+      (err) => {
+        console.error("Could not copy text: ", err)
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy API endpoint.",
+          variant: "destructive",
+        })
+      },
+    )
+  }
+
   useEffect(() => {
     fetchTokens()
   }, [fetchTokens])
@@ -119,14 +139,25 @@ export function Junk20Section() {
     <Card className="bg-[#031126] border-[#ff5e01]/20 w-full overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl sm:text-2xl font-semibold text-[#ff5e01] vt323-regular">JUNK-20 Tokens</CardTitle>
-        <Button
-          variant="ghost"
-          onClick={fetchTokens}
-          className="text-[#ff5e01] hover:text-[#ff5e01]/80"
-          disabled={loading}
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={copyApiEndpoint}
+            className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+            title="Copy API endpoint"
+          >
+            <Code className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={fetchTokens}
+            className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {error && <div className="text-red-500 mb-4">{error}</div>}
