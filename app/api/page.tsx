@@ -34,14 +34,14 @@ const apiSections: ApiSection[] = [
         path: "/block-count",
         description: "Get current block height",
         example: `${API_BASE_URL}/block-count`,
-        response: "300150",
+        response: "300157",
       },
       {
         method: "GET",
         path: "/blocks/tip/height",
         description: "Alternative endpoint for current block height",
         example: `${API_BASE_URL}/blocks/tip/height`,
-        response: "300150",
+        response: "300157",
       },
       {
         method: "GET",
@@ -51,13 +51,15 @@ const apiSections: ApiSection[] = [
         example: `${API_BASE_URL}/block/300000`,
         response: `{
   "height": 300000,
-  "hash": "abc123...",
-  "target": "def456...",
-  "timestamp": 1640995200,
-  "size": 1024,
-  "weight": 4096,
-  "prev_blockhash": "ghi789...",
-  "transactions": ["tx1...", "tx2..."]
+  "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "target": "1d00ffff",
+  "timestamp": 1704067200,
+  "size": 285,
+  "weight": 1140,
+  "prev_blockhash": "0000000000000000000000000000000000000000000000000000000000000001",
+  "transactions": [
+    "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
+  ]
 }`,
       },
     ],
@@ -69,41 +71,76 @@ const apiSections: ApiSection[] = [
       {
         method: "GET",
         path: "/junkscriptions",
-        description: "Get latest junkscriptions (HTML response)",
+        description: "Get latest junkscriptions (HTML response with thumbnails)",
         example: `${API_BASE_URL}/junkscriptions`,
-        response: "HTML page with junkscription thumbnails",
+        response: `<!DOCTYPE html>
+<html>
+<head><title>Junkscriptions</title></head>
+<body>
+  <div class="thumbnails">
+    <a href="/junkscription/abc123i0">Junkscription #0</a>
+    <a href="/junkscription/def456i1">Junkscription #1</a>
+    <!-- ... more junkscriptions ... -->
+  </div>
+</body>
+</html>`,
       },
       {
         method: "GET",
         path: "/junkscriptions",
-        description: "Get paginated junkscriptions (JSON)",
+        description: "Get paginated junkscriptions (JSON when Accept: application/json)",
         parameters: [
           { name: "page", type: "number", required: false, description: "Page number (default: 1)" },
           { name: "limit", type: "number", required: false, description: "Items per page (default: 20)" },
         ],
-        example: `${API_BASE_URL}/junkscriptions?page=1&limit=20`,
+        example: `${API_BASE_URL}/junkscriptions?page=1&limit=5`,
         response: `[
   {
-    "id": "abc123i0",
+    "id": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890i0",
     "content_type": "text/html"
+  },
+  {
+    "id": "b2c3d4e5f6789012345678901234567890123456789012345678901234567890a1i1", 
+    "content_type": "image/png"
+  },
+  {
+    "id": "c3d4e5f6789012345678901234567890123456789012345678901234567890a1b2i2",
+    "content_type": "text/plain"
   }
 ]`,
       },
       {
         method: "GET",
         path: "/junkscription/{id}",
-        description: "Get junkscription details",
+        description: "Get junkscription details (HTML page)",
         parameters: [{ name: "id", type: "string", required: true, description: "Junkscription ID" }],
-        example: `${API_BASE_URL}/junkscription/abc123i0`,
-        response: "HTML page with junkscription details",
+        example: `${API_BASE_URL}/junkscription/a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890i0`,
+        response: `<!DOCTYPE html>
+<html>
+<head><title>Junkscription a1b2c3...i0</title></head>
+<body>
+  <dl>
+    <dt>content type</dt><dd>text/html</dd>
+    <dt>content</dt><dd>&lt;h1&gt;Hello Junkinals!&lt;/h1&gt;</dd>
+    <dt>timestamp</dt><dd>2024-01-01 12:00:00 UTC</dd>
+    <dt>address</dt><dd>JKC1abc123def456...</dd>
+    <dt>output value</dt><dd>546</dd>
+    <dt>content length</dt><dd>25</dd>
+    <dt>genesis height</dt><dd>300000</dd>
+    <dt>genesis fee</dt><dd>1000</dd>
+    <dt>location</dt><dd>a1b2c3...i0:0:0</dd>
+  </dl>
+</body>
+</html>`,
       },
       {
         method: "GET",
         path: "/preview/{id}",
-        description: "Get junkscription preview content",
+        description: "Get junkscription preview content for iframe display",
         parameters: [{ name: "id", type: "string", required: true, description: "Junkscription ID" }],
-        example: `${API_BASE_URL}/preview/abc123i0`,
-        response: "Raw content for iframe display",
+        example: `${API_BASE_URL}/preview/a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890i0`,
+        response: `<h1>Hello Junkinals!</h1>
+<p>This is a sample junkscription content.</p>`,
       },
     ],
   },
@@ -116,7 +153,7 @@ const apiSections: ApiSection[] = [
         path: "/junk20/ticks",
         description: "Get all available JUNK-20 token tickers",
         example: `${API_BASE_URL}/junk20/ticks`,
-        response: `["junk", "test", "demo"]`,
+        response: `["junk", "test", "demo", "coin", "meme"]`,
       },
       {
         method: "GET",
@@ -126,17 +163,17 @@ const apiSections: ApiSection[] = [
         example: `${API_BASE_URL}/junk20/tick/junk`,
         response: `{
   "tick": "junk",
-  "inscription_id": "abc123i0",
+  "inscription_id": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890i0",
   "inscription_number": 1,
-  "supply": "21000000000000",
-  "minted": "10500000000000",
-  "limit_per_mint": "1000000000",
+  "supply": "2100000000000000",
+  "minted": "1050000000000000",
+  "limit_per_mint": "100000000000",
   "decimal": 8,
   "deploy_by": {
-    "Address": "JKC1abc..."
+    "Address": "JKC1qw2e3r4t5y6u7i8o9p0a1s2d3f4g5h6j7k8l9"
   },
   "deployed_number": 1,
-  "deployed_timestamp": 1640995200,
+  "deployed_timestamp": 1704067200,
   "latest_mint_number": 150
 }`,
       },
@@ -145,13 +182,23 @@ const apiSections: ApiSection[] = [
         path: "/junk20/balance/{address}",
         description: "Get JUNK-20 token balances for an address",
         parameters: [{ name: "address", type: "string", required: true, description: "JKC address" }],
-        example: `${API_BASE_URL}/junk20/balance/JKC1abc...`,
+        example: `${API_BASE_URL}/junk20/balance/JKC1qw2e3r4t5y6u7i8o9p0a1s2d3f4g5h6j7k8l9`,
         response: `{
   "junk20": [
     {
       "tick": "junk",
+      "available": "500000000000",
+      "transferable": "250000000000"
+    },
+    {
+      "tick": "test", 
       "available": "1000000000",
       "transferable": "500000000"
+    },
+    {
+      "tick": "demo",
+      "available": "750000000",
+      "transferable": "0"
     }
   ]
 }`,
@@ -165,10 +212,35 @@ const apiSections: ApiSection[] = [
       {
         method: "GET",
         path: "/tx/{txid}",
-        description: "Get transaction details",
-        parameters: [{ name: "txid", type: "string", required: true, description: "Transaction ID" }],
-        example: `${API_BASE_URL}/tx/abc123...`,
-        response: "HTML page with transaction details",
+        description: "Get transaction details (HTML page)",
+        parameters: [
+          { name: "txid", type: "string", required: true, description: "Transaction ID (64-character hex)" },
+        ],
+        example: `${API_BASE_URL}/tx/a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890`,
+        response: `<!DOCTYPE html>
+<html>
+<head><title>Transaction a1b2c3...7890</title></head>
+<body>
+  <h1>Transaction Details</h1>
+  <dl>
+    <dt>Transaction ID</dt><dd>a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890</dd>
+    <dt>Block Height</dt><dd>300000</dd>
+    <dt>Block Hash</dt><dd>0000000000000000000000000000000000000000000000000000000000000000</dd>
+    <dt>Timestamp</dt><dd>2024-01-01 12:00:00 UTC</dd>
+    <dt>Size</dt><dd>250 bytes</dd>
+    <dt>Fee</dt><dd>1000 satoshis</dd>
+    <dt>Confirmations</dt><dd>157</dd>
+  </dl>
+  <h2>Inputs</h2>
+  <ul>
+    <li>Previous TX: b2c3d4e5...a1b2:0 (546 sats)</li>
+  </ul>
+  <h2>Outputs</h2>
+  <ul>
+    <li>JKC1qw2e3r4t5y6u7i8o9p0a1s2d3f4g5h6j7k8l9: 546 sats</li>
+  </ul>
+</body>
+</html>`,
       },
     ],
   },
@@ -213,11 +285,14 @@ export default function ApiDocumentationPage() {
         responseText = await response.text()
         // Truncate HTML responses for display
         if (responseText.length > 1000) {
-          responseText = responseText.substring(0, 1000) + "...\n[Response truncated]"
+          responseText =
+            responseText.substring(0, 1000) + "...\n[Response truncated - full response available in browser]"
         }
       }
 
-      setTestResponse(`Status: ${response.status}\nContent-Type: ${contentType}\n\n${responseText}`)
+      setTestResponse(
+        `Status: ${response.status} ${response.statusText}\nContent-Type: ${contentType}\nResponse Size: ${responseText.length} characters\n\n${responseText}`,
+      )
     } catch (error) {
       setTestResponse(`Error: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
@@ -248,7 +323,8 @@ export default function ApiDocumentationPage() {
             Junkinals Explorer API Documentation
           </CardTitle>
           <p className="text-[hsl(var(--body-text))] ibm-plex-mono-regular">
-            Complete API reference for the Junkinals Explorer. All endpoints return data from the Junkcoin blockchain.
+            Complete API reference for the Junkinals Explorer. All endpoints return live data from the Junkcoin
+            blockchain. Click the test buttons to see real responses.
           </p>
         </CardHeader>
         <CardContent>
@@ -273,9 +349,32 @@ export default function ApiDocumentationPage() {
             <div>
               <h3 className="text-lg font-semibold text-[#ff5e01] mb-2">Response Format</h3>
               <p className="text-[hsl(var(--body-text))] ibm-plex-mono-regular text-sm">
-                Most endpoints return JSON data. Some legacy endpoints return HTML for direct browser viewing. All
-                timestamps are Unix timestamps (seconds since epoch).
+                Most endpoints return JSON data. Legacy endpoints return HTML for direct browser viewing. All timestamps
+                are Unix timestamps (seconds since epoch). JUNK-20 token amounts are in the smallest unit (considering
+                decimals).
               </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-[#ff5e01] mb-2">Status Codes</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/40">200</Badge>
+                  <span className="text-[hsl(var(--body-text))]">Success</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-red-500/20 text-red-400 border-red-500/40">404</Badge>
+                  <span className="text-[hsl(var(--body-text))]">Not Found</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/40">400</Badge>
+                  <span className="text-[hsl(var(--body-text))]">Bad Request</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-red-500/20 text-red-400 border-red-500/40">500</Badge>
+                  <span className="text-[hsl(var(--body-text))]">Server Error</span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -284,7 +383,10 @@ export default function ApiDocumentationPage() {
       {/* API Tester */}
       <Card className="bg-[#031126] border-[#ff5e01]/20">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-[#ff5e01] vt323-regular">API Tester</CardTitle>
+          <CardTitle className="text-xl font-semibold text-[#ff5e01] vt323-regular">Live API Tester</CardTitle>
+          <p className="text-[hsl(var(--body-text))] ibm-plex-mono-regular text-sm">
+            Test any API endpoint directly. Click the test buttons below or enter a custom URL.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -307,8 +409,8 @@ export default function ApiDocumentationPage() {
 
             {testResponse && (
               <div className="bg-[#031126] border border-[#ff5e01]/20 rounded p-4">
-                <h4 className="text-[#ff5e01] font-semibold mb-2">Response:</h4>
-                <pre className="text-[hsl(var(--body-text))] text-sm ibm-plex-mono-regular whitespace-pre-wrap overflow-x-auto">
+                <h4 className="text-[#ff5e01] font-semibold mb-2">Live Response:</h4>
+                <pre className="text-[hsl(var(--body-text))] text-sm ibm-plex-mono-regular whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto">
                   {testResponse}
                 </pre>
               </div>
@@ -364,7 +466,7 @@ export default function ApiDocumentationPage() {
 
                   {endpoint.example && (
                     <div className="mb-4">
-                      <h4 className="text-[#ff5e01] font-semibold mb-2">Example:</h4>
+                      <h4 className="text-[#ff5e01] font-semibold mb-2">Example Request:</h4>
                       <div className="flex items-center space-x-2">
                         <code className="bg-[#031126] border border-[#ff5e01]/20 px-3 py-2 rounded text-[#ff5e01] ibm-plex-mono-regular text-sm flex-1 overflow-x-auto">
                           {endpoint.example}
@@ -374,6 +476,7 @@ export default function ApiDocumentationPage() {
                           size="sm"
                           onClick={() => copyToClipboard(endpoint.example!)}
                           className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+                          title="Copy URL"
                         >
                           <Copy className="h-4 w-4" />
                         </Button>
@@ -382,6 +485,8 @@ export default function ApiDocumentationPage() {
                           size="sm"
                           onClick={() => testApiEndpoint(endpoint.example!)}
                           className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+                          title="Test endpoint"
+                          disabled={testing}
                         >
                           <Play className="h-4 w-4" />
                         </Button>
@@ -390,6 +495,7 @@ export default function ApiDocumentationPage() {
                           size="sm"
                           onClick={() => window.open(endpoint.example!, "_blank")}
                           className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+                          title="Open in new tab"
                         >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
@@ -399,8 +505,8 @@ export default function ApiDocumentationPage() {
 
                   {endpoint.response && (
                     <div>
-                      <h4 className="text-[#ff5e01] font-semibold mb-2">Response:</h4>
-                      <pre className="bg-[#031126] border border-[#ff5e01]/20 px-3 py-2 rounded text-[hsl(var(--body-text))] ibm-plex-mono-regular text-sm overflow-x-auto">
+                      <h4 className="text-[#ff5e01] font-semibold mb-2">Example Response:</h4>
+                      <pre className="bg-[#031126] border border-[#ff5e01]/20 px-3 py-2 rounded text-[hsl(var(--body-text))] ibm-plex-mono-regular text-sm overflow-x-auto max-h-64 overflow-y-auto">
                         {endpoint.response}
                       </pre>
                     </div>
@@ -412,31 +518,58 @@ export default function ApiDocumentationPage() {
         </Card>
       ))}
 
-      {/* Rate Limiting & Usage Notes */}
+      {/* Usage Notes */}
       <Card className="bg-[#031126] border-[#ff5e01]/20">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-[#ff5e01] vt323-regular">Usage Notes</CardTitle>
+          <CardTitle className="text-xl font-semibold text-[#ff5e01] vt323-regular">
+            Usage Notes & Best Practices
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4 text-[hsl(var(--body-text))] ibm-plex-mono-regular">
             <div>
               <h4 className="text-[#ff5e01] font-semibold mb-2">Rate Limiting</h4>
-              <p>Please be respectful with API usage. Excessive requests may be rate limited.</p>
+              <p>
+                Please be respectful with API usage. Excessive requests may be rate limited. Recommended: max 10
+                requests per second.
+              </p>
             </div>
 
             <div>
-              <h4 className="text-[#ff5e01] font-semibold mb-2">CORS</h4>
-              <p>Cross-origin requests are supported for web applications.</p>
+              <h4 className="text-[#ff5e01] font-semibold mb-2">CORS Support</h4>
+              <p>Cross-origin requests are supported for web applications. No API key required for public endpoints.</p>
             </div>
 
             <div>
               <h4 className="text-[#ff5e01] font-semibold mb-2">Data Freshness</h4>
-              <p>Data is updated in real-time as new blocks are mined on the Junkcoin network.</p>
+              <p>
+                Data is updated in real-time as new blocks are mined on the Junkcoin network. Block data updates every
+                ~1 minute.
+              </p>
             </div>
 
             <div>
               <h4 className="text-[#ff5e01] font-semibold mb-2">Error Handling</h4>
-              <p>HTTP status codes indicate success (200) or various error conditions (404, 500, etc.).</p>
+              <p>
+                HTTP status codes indicate success (200) or various error conditions. Always check the status code
+                before processing responses.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-[#ff5e01] font-semibold mb-2">JUNK-20 Token Amounts</h4>
+              <p>
+                All token amounts are returned in the smallest unit. For tokens with 8 decimals, divide by 100,000,000
+                to get the display amount.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-[#ff5e01] font-semibold mb-2">Junkscription IDs</h4>
+              <p>
+                Junkscription IDs follow the format: {`{txid}i{index}`} where txid is the transaction hash and index is
+                the output index.
+              </p>
             </div>
           </div>
         </CardContent>
