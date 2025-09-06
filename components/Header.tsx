@@ -1,47 +1,60 @@
 "use client"
 
 import Link from "next/link"
-import { Info, Search, Code } from "lucide-react"
+import { Info, Search, Code, Zap } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { API_BASE_URL } from "@/utils/api"
+import { junkinalsAPI } from "@/utils/completeApi"
 
 export function Header() {
   const [query, setQuery] = useState("")
-  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleSearch = async () => {
-    if (query) {
-      setError("")
-      // Check if the query is a valid junkscription ID or transaction ID
-      const isValidId = /^[a-fA-F0-9]{64}i?[0-9]*$/.test(query)
+    if (!query.trim()) return
 
-      if (!isValidId) {
-        setError("Invalid search query. Please enter a valid junkscription ID or transaction ID.")
-        return
+    setLoading(true)
+    try {
+      // Use universal search to detect and redirect appropriately
+      const result = await junkinalsAPI.universalSearch(query.trim())
+
+      // Redirect based on search result type
+      switch (result.type) {
+        case "address":
+          router.push(`/address?q=${encodeURIComponent(query.trim())}`)
+          break
+        case "junkscription":
+          window.open(`https://ord.junkiewally.xyz/junkscription/${query.trim()}`, "_blank")
+          break
+        case "tx":
+          window.open(`https://ord.junkiewally.xyz/tx/${query.trim()}`, "_blank")
+          break
+        case "block":
+          window.open(`https://ord.junkiewally.xyz/block/${query.trim()}`, "_blank")
+          break
+        default:
+          // If type is unknown or multiple results, go to search page
+          router.push(`/search?q=${encodeURIComponent(query.trim())}`)
       }
-
-      // Determine if it's a junkscription ID or transaction ID
-      const isJunkscription = query.includes("i")
-
-      try {
-        const endpoint = isJunkscription ? "junkscription" : "tx"
-        const url = `${API_BASE_URL}/${endpoint}/${query}`
-
-        const response = await fetch(url)
-        if (response.ok) {
-          router.push(url)
-        } else {
-          setError(`No results found for the given ${isJunkscription ? "junkscription" : "transaction"} ID.`)
-        }
-      } catch (error) {
-        console.error("Error during search:", error)
-        setError("An error occurred while searching. Please try again.")
-      }
+    } catch (error) {
+      console.error("Search error:", error)
+      // Fallback to search page
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  const getPlaceholder = () => {
+    const placeholders = [
+      "Search addresses, junkscriptions, transactions...",
+      "Try: JKC1abc... or a1b2c3...i0 or block height",
+      "Universal search: any address, tx, block, token",
+    ]
+    return placeholders[Math.floor(Math.random() * placeholders.length)]
   }
 
   return (
@@ -54,6 +67,20 @@ export function Header() {
           <Link href="/api" className="text-[#ff5e01]/80 hover:text-[#ff5e01] ibm-plex-mono-regular flex items-center">
             <Code className="w-4 h-4 mr-1" />
             API
+          </Link>
+          <Link
+            href="/search"
+            className="text-[#ff5e01]/80 hover:text-[#ff5e01] ibm-plex-mono-regular flex items-center"
+          >
+            <Zap className="w-4 h-4 mr-1" />
+            Search
+          </Link>
+          <Link
+            href="/address"
+            className="text-[#ff5e01]/80 hover:text-[#ff5e01] ibm-plex-mono-regular flex items-center"
+          >
+            <Search className="w-4 h-4 mr-1" />
+            Address
           </Link>
           <Link
             href="https://github.com/Junkcoin-Foundation/junkscriptions"
@@ -77,18 +104,23 @@ export function Header() {
         <div className="flex items-center space-x-2 w-full md:w-auto mt-2 md:mt-0">
           <Input
             type="text"
-            placeholder="Search junkscription or transaction ID..."
+            placeholder={getPlaceholder()}
             className="w-full md:w-96 bg-[#031126] border-[#ff5e01]/20 text-[#ff5e01] ibm-plex-mono-regular"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+            disabled={loading}
           />
-          <Button variant="ghost" onClick={handleSearch} className="text-[#ff5e01] hover:text-[#ff5e01]/80">
-            <Search className="h-5 w-5" />
+          <Button
+            variant="ghost"
+            onClick={handleSearch}
+            className="text-[#ff5e01] hover:text-[#ff5e01]/80"
+            disabled={loading || !query.trim()}
+          >
+            <Search className={`h-5 w-5 ${loading ? "animate-pulse" : ""}`} />
           </Button>
         </div>
       </nav>
-      {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
     </header>
   )
 }
